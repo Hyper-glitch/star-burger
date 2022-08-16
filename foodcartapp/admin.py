@@ -110,7 +110,6 @@ class ProductAdmin(admin.ModelAdmin):
 
 
 class OrderItemInline(admin.TabularInline):
-    readonly_fields = ('product', 'quantity')
     model = OrderItem
     extra = 0
 
@@ -120,8 +119,3 @@ class OrderAdmin(admin.ModelAdmin):
     inlines = [
         OrderItemInline,
     ]
-
-
-@admin.register(OrderItem)
-class OrderItemAdmin(admin.ModelAdmin):
-    pass
