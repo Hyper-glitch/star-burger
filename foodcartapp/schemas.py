@@ -1,23 +1,13 @@
 """Module for serialization models for foodcartapp."""
 from marshmallow import Schema, fields, validates, ValidationError, post_load
 
-from foodcartapp.models import Order, OrderItem
+from foodcartapp.models import Order
 
 
 class OrderItemJSONSchema(Schema):
     """Schema for serialization items information."""
     product = fields.Integer()
     quantity = fields.Integer()
-
-
-class OrderItemBDSchema(Schema):
-    """Schema for serialization items information."""
-    product = fields.Integer()
-    quantity = fields.Integer()
-
-    @post_load
-    def make_order_item(self, data, **kwargs):
-        return OrderItem(**data)
 
 
 class OrderJSONSchema(Schema):
@@ -42,4 +32,4 @@ class OrderDBSchema(Schema):
 
     @post_load
     def make_order(self, data, **kwargs):
-        return Order(**data)
+        return Order.objects.create(**data)
