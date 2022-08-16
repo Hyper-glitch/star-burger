@@ -63,10 +63,10 @@ def register_order(request):
 
     order = order_json_schema.loads(request.body.decode())
     products = order.pop('products')
+    order_obj = order_db_schema.load(order)
 
     for product_data in products:
         product = Product.objects.get(pk=product_data['product'])
-        OrderItem.objects.create(product=product, quantity=product_data['quantity'])
+        OrderItem.objects.create(product=product, quantity=product_data['quantity'], order=order_obj)
 
-    order_db_schema.load(order)
     return JsonResponse(order)
