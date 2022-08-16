@@ -146,6 +146,12 @@ class OrderItem(models.Model):
         verbose_name='продукт',
     )
     quantity = models.IntegerField(verbose_name='количество')
+    order = models.ForeignKey(
+        Order,
+        related_name='items',
+        verbose_name='заказ',
+        on_delete=models.CASCADE,
+    )
 
     class Meta:
         verbose_name = 'элемент заказа'
