@@ -1,8 +1,10 @@
 from django.http import JsonResponse
 from django.templatetags.static import static
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
-from .models import Product, OrderItem
-from .schemas import OrderDBSchema, OrderJSONSchema
+from .models import Product
+from .serializers import OrderSerializer, OrderItemSerializer
 
 
 def banners_list_api(request):
@@ -57,16 +59,22 @@ def product_list_api(request):
     })
 
 
+@api_view(['POST'])
 def register_order(request):
-    order_json_schema = OrderJSONSchema()
-    order_db_schema = OrderDBSchema()
+    raw_order = request.data
+    raw_order_items = raw_order.pop('products')
 
-    order = order_json_schema.loads(request.body.decode())
-    products = order.pop('products')
-    order_obj = order_db_schema.load(order)
+    order_serializer = OrderSerializer()
+    order_item_serializer = OrderItemSerializer(many=True)
 
-    for product_data in products:
+    order = order_serializer.create(raw_order)
+    copied_order_items = raw_order_items.copy()
+
+    for product_data in copied_order_items:
         product = Product.objects.get(pk=product_data['product'])
-        OrderItem.objects.create(product=product, quantity=product_data['quantity'], order=order_obj)
+        product_data['product'] = product
+        product_data['order'] = order
 
-    return JsonResponse(order)
+    order_item_serializer.create(copied_order_items)
+
+    return Response()
