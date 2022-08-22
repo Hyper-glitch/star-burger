@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from foodcartapp.models import Order, OrderItem
+from foodcartapp.models import Order, OrderItem, Product
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -9,24 +9,14 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def create(self, validated_data):
-        order = Order.objects.create(
-            firstname=validated_data['firstname'],
-            lastname=validated_data['lastname'],
-            phonenumber=validated_data['phonenumber'],
-            address=validated_data['address'],
-        )
+        products = validated_data.pop('products')
+        order = Order.objects.create(**validated_data)
+
+        for item in products:
+            OrderItem.objects.create(
+                product=Product.objects.get(pk=item['product']),
+                quantity=item['quantity'],
+                order=order,
+            )
+
         return order
-
-
-class OrderItemSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = OrderItem
-        fields = '__all__'
-
-    def create(self, validated_data):
-        order_item = OrderItem.objects.create(
-            product=validated_data['product'],
-            quantity=validated_data['quantity'],
-            order=validated_data['order'],
-        )
-        return order_item
