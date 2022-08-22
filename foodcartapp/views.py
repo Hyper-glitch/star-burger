@@ -1,10 +1,12 @@
 from django.http import JsonResponse
 from django.templatetags.static import static
+from rest_framework import status
 from rest_framework.decorators import api_view
+from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 
 from .models import Product
-from .serializers import OrderSerializer, OrderItemSerializer
+from .serializers import OrderSerializer
 
 
 def banners_list_api(request):
@@ -62,19 +64,27 @@ def product_list_api(request):
 @api_view(['POST'])
 def register_order(request):
     raw_order = request.data
-    raw_order_items = raw_order.pop('products')
+    response_status = status.HTTP_400_BAD_REQUEST
 
-    order_serializer = OrderSerializer()
-    order_item_serializer = OrderItemSerializer(many=True)
+    try:
+        products = raw_order['products']
+    except KeyError as exc:
+        products = exc
 
-    order = order_serializer.create(raw_order)
-    copied_order_items = raw_order_items.copy()
+    match products:
+        case str():
+            content = {'products': 'Ожидался list со значениями, но был получен str'}
+        case None:
+            content = {'products': 'Это поле не может быть пустым'}
+        case []:
+            content = {'products': 'Этот список не может быть пустым'}
+        case KeyError():
+            content = {'products': 'Обязательное поле'}
+        case _:
+            serializer = OrderSerializer(data=raw_order)
+            serializer.is_valid(raise_exception=True)
+            serializer.save(products=products)
+            json = JSONRenderer().render(serializer.data)
+            return Response(json)
 
-    for product_data in copied_order_items:
-        product = Product.objects.get(pk=product_data['product'])
-        product_data['product'] = product
-        product_data['order'] = order
-
-    order_item_serializer.create(copied_order_items)
-
-    return Response()
+    return Response(data=content, status=response_status)
