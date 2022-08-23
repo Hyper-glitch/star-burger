@@ -7,6 +7,7 @@ from rest_framework.response import Response
 
 from .models import Product
 from .serializers import OrderSerializer
+from .validators import validate_order, validate_products
 
 
 def banners_list_api(request):
@@ -66,25 +67,17 @@ def register_order(request):
     raw_order = request.data
     response_status = status.HTTP_400_BAD_REQUEST
 
-    try:
-        products = raw_order['products']
-    except KeyError as exc:
-        products = exc
+    products_content = validate_products(raw_order)
+    if products_content:
+        return Response(data=products_content, status=response_status)
 
-    match products:
-        case str():
-            content = {'products': 'Ожидался list со значениями, но был получен str'}
-        case None:
-            content = {'products': 'Это поле не может быть пустым'}
-        case []:
-            content = {'products': 'Этот список не может быть пустым'}
-        case KeyError():
-            content = {'products': 'Обязательное поле'}
-        case _:
-            serializer = OrderSerializer(data=raw_order)
-            serializer.is_valid(raise_exception=True)
-            serializer.save(products=products)
-            json = JSONRenderer().render(serializer.data)
-            return Response(json)
+    order_content = validate_order(raw_order)
+    if order_content:
+        return Response(data=order_content, status=response_status)
 
-    return Response(data=content, status=response_status)
+    products = raw_order['products']
+    serializer = OrderSerializer(data=raw_order)
+    serializer.is_valid(raise_exception=True)
+    serializer.save(products=products)
+    json = JSONRenderer().render(serializer.data)
+    return Response(json)
