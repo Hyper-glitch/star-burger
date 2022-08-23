@@ -1,7 +1,22 @@
 import phonenumbers
 from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.serializers import ValidationError
 
 from foodcartapp.models import Product
+
+
+def validate(raw_order):
+    errors = []
+
+    products_content = validate_products(raw_order)
+    if products_content:
+        errors.append(products_content)
+
+    order_content = validate_order(raw_order)
+    if order_content:
+        errors.append(order_content)
+
+    raise ValidationError(detail=errors)
 
 
 def validate_products(raw_order: dict) -> dict | None:
