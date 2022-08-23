@@ -1,7 +1,10 @@
 import phonenumbers
+from django.core.exceptions import ObjectDoesNotExist
+
+from foodcartapp.models import Product
 
 
-def validate_products(raw_order):
+def validate_products(raw_order: dict) -> dict | None:
     product_key = 'products'
     error_text = None
 
@@ -9,6 +12,10 @@ def validate_products(raw_order):
         products = raw_order['products']
     except KeyError as exc:
         products = exc
+
+    content = validate_product_pk(products, product_key) if isinstance(products, list) and len(products) > 0 else None
+    if content:
+        return content
 
     match products:
         case str():
@@ -24,7 +31,7 @@ def validate_products(raw_order):
     return content if error_text else None
 
 
-def validate_order(raw_order: dict):
+def validate_order(raw_order: dict) -> dict | None:
     copied_order = raw_order.copy()
     copied_order.pop('products')
     order_keys = ''
@@ -64,3 +71,13 @@ def validate_phone_number(phonenumber: str) -> None | dict:
         order_keys = 'phonenumber'
         error_text = 'Введен некорректный номер телефона'
         return {order_keys: error_text}
+
+
+def validate_product_pk(products: list, product_key: str):
+    for product in products:
+        product_pk = product['product']
+        try:
+            Product.objects.get(pk=product_pk)
+        except ObjectDoesNotExist:
+            error_text = f'Недопустимый первичный ключ {product_pk}'
+            return {product_key: error_text}
