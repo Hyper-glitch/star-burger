@@ -1,3 +1,4 @@
+"""Deprecated. Used for validate data before DRF serializers."""
 import phonenumbers
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.serializers import ValidationError
