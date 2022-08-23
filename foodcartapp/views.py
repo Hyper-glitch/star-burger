@@ -64,14 +64,13 @@ def product_list_api(request):
 def register_order(request):
     raw_order = request.data
 
-    serializer = OrderSerializer(data=raw_order)
-    serializer.is_valid(raise_exception=True)
-    valid_data = serializer.validated_data
+    raw_serializer = OrderSerializer(data=raw_order)
+    raw_serializer.is_valid(raise_exception=True)
+    valid_data = raw_serializer.validated_data
 
     model_serializer = OrderModelSerializer(data=valid_data)
     model_serializer.is_valid(raise_exception=True)
-    model_serializer.save(products=valid_data['products'])
+    order = model_serializer.save(products=valid_data['products'])
 
-    json = JSONRenderer().render(serializer.data)
-
-    return Response(json)
+    instance_serializer = OrderModelSerializer(instance=order)
+    return Response(instance_serializer.data)

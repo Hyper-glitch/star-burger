@@ -17,7 +17,8 @@ class OrderModelSerializer(ModelSerializer):
         order_items = [
             OrderItem(order=order, product=product['product'], quantity=product['quantity']) for product in products
         ]
-        return OrderItem.objects.bulk_create(order_items)
+        OrderItem.objects.bulk_create(order_items)
+        return order
 
 
 class OrderItemSerializer(Serializer):
