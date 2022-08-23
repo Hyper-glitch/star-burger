@@ -1,6 +1,6 @@
-from phonenumber_field.modelfields import PhoneNumberField
+import phonenumbers
 from rest_framework.serializers import (
-    Serializer, ModelSerializer, PrimaryKeyRelatedField, CharField, IntegerField, ListField,
+    Serializer, ModelSerializer, PrimaryKeyRelatedField, CharField, IntegerField, ValidationError,
 )
 
 from foodcartapp.models import Order, OrderItem, Product
@@ -14,15 +14,10 @@ class OrderModelSerializer(ModelSerializer):
     def create(self, validated_data):
         products = validated_data.pop('products')
         order = Order.objects.create(**validated_data)
-
-        for item in products:
-            OrderItem.objects.create(
-                product=Product.objects.get(pk=item['product']),
-                quantity=item['quantity'],
-                order=order,
-            )
-
-        return order
+        order_items = [
+            OrderItem(order=order, product=product['product'], quantity=product['quantity']) for product in products
+        ]
+        return OrderItem.objects.bulk_create(order_items)
 
 
 class OrderItemSerializer(Serializer):
@@ -34,5 +29,11 @@ class OrderSerializer(Serializer):
     products = OrderItemSerializer(many=True, allow_empty=False)
     firstname = CharField()
     lastname = CharField()
-    phonenumber = PhoneNumberField()
+    phonenumber = CharField()
     address = CharField()
+
+    def validate_phonenumber(self, phonenumber: str):
+        parsed_phonenumber = phonenumbers.parse(phonenumber)
+        if not phonenumbers.is_valid_number(parsed_phonenumber):
+            raise ValidationError('Введен некорректный номер телефона')
+        return phonenumber
