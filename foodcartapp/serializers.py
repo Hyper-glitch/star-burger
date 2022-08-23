@@ -31,7 +31,7 @@ class OrderItemSerializer(Serializer):
 
 
 class OrderSerializer(Serializer):
-    products = ListField(child=OrderItemSerializer(), allow_empty=False)
+    products = OrderItemSerializer(many=True, allow_empty=False)
     firstname = CharField()
     lastname = CharField()
     phonenumber = PhoneNumberField()
