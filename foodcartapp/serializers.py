@@ -1,5 +1,7 @@
 from phonenumber_field.modelfields import PhoneNumberField
-from rest_framework.serializers import Serializer, ModelSerializer, PrimaryKeyRelatedField, CharField, IntegerField
+from rest_framework.serializers import (
+    Serializer, ModelSerializer, PrimaryKeyRelatedField, CharField, IntegerField, ListField,
+)
 
 from foodcartapp.models import Order, OrderItem, Product
 
@@ -29,7 +31,7 @@ class OrderItemSerializer(Serializer):
 
 
 class OrderSerializer(Serializer):
-    products = OrderItemSerializer(required=True, many=True, allow_empty=False)
+    products = ListField(child=OrderItemSerializer(), allow_empty=False)
     firstname = CharField()
     lastname = CharField()
     phonenumber = PhoneNumberField()
