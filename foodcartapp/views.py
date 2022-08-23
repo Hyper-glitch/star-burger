@@ -1,13 +1,11 @@
 from django.http import JsonResponse
 from django.templatetags.static import static
-from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 
 from .models import Product
-from .serializers import OrderSerializer
-from .validators import validate_order, validate_products
+from .serializers import OrderModelSerializer, OrderSerializer
 
 
 def banners_list_api(request):
@@ -65,19 +63,13 @@ def product_list_api(request):
 @api_view(['POST'])
 def register_order(request):
     raw_order = request.data
-    response_status = status.HTTP_400_BAD_REQUEST
+    order_serializer = OrderSerializer(data=raw_order)
+    order_serializer.is_valid(raise_exception=True)
 
-    products_content = validate_products(raw_order)
-    if products_content:
-        return Response(data=products_content, status=response_status)
-
-    order_content = validate_order(raw_order)
-    if order_content:
-        return Response(data=order_content, status=response_status)
-
-    products = raw_order['products']
-    serializer = OrderSerializer(data=raw_order)
+    serializer = OrderModelSerializer(data=raw_order)
     serializer.is_valid(raise_exception=True)
-    serializer.save(products=products)
+    serializer.save(products=raw_order['products'])
+
     json = JSONRenderer().render(serializer.data)
+
     return Response(json)
