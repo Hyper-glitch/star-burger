@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 
 
-from foodcartapp.models import Product, Restaurant
+from foodcartapp.models import Product, Restaurant, OrderItem
 
 
 class Login(forms.Form):
@@ -116,6 +116,6 @@ def view_orders(request):
         request,
         template_name="order_items.html",
         context={
-            # TODO заглушка для нереализованного функционала
+            "order_items": OrderItem.objects.select_related("order").all(),
         },
     )
