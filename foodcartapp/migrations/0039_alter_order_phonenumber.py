@@ -7,13 +7,15 @@ import phonenumber_field.modelfields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('foodcartapp', '0038_order_orderitem'),
+        ("foodcartapp", "0038_order_orderitem"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='order',
-            name='phonenumber',
-            field=phonenumber_field.modelfields.PhoneNumberField(db_index=True, max_length=128, region=None, verbose_name='Телефон'),
+            model_name="order",
+            name="phonenumber",
+            field=phonenumber_field.modelfields.PhoneNumberField(
+                db_index=True, max_length=128, region=None, verbose_name="Телефон"
+            ),
         ),
     ]
