@@ -136,6 +136,9 @@ class OrderItem(models.Model):
         verbose_name="заказ",
         on_delete=models.CASCADE,
     )
+    price = models.DecimalField(
+        "стоимость", max_digits=8, decimal_places=2, validators=[MinValueValidator(0)], null=True, blank=True,
+    )
     objects = OrderItemQuerySet.as_manager()
 
     class Meta:
