@@ -137,7 +137,7 @@ class OrderItem(models.Model):
         on_delete=models.CASCADE,
     )
     price = models.DecimalField(
-        "стоимость", max_digits=8, decimal_places=2, validators=[MinValueValidator(0)], null=True, blank=True,
+        "стоимость", max_digits=8, decimal_places=2, validators=[MinValueValidator(0)], blank=True,
     )
     objects = OrderItemQuerySet.as_manager()
 
