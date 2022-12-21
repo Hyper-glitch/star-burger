@@ -4,3 +4,5 @@ Pillow==9.2.*
 environs[django]==9.3.2
 django-phonenumber-field[phonenumbers]==6.3.*
 djangorestframework==3.13.*
+flake8==6.0.*
+flake8-black==0.3.*
