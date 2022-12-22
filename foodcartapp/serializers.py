@@ -21,7 +21,10 @@ class OrderModelSerializer(ModelSerializer):
         order = Order.objects.create(**validated_data)
         order_items = [
             OrderItem(
-                order=order, product=product["product"], quantity=product["quantity"]
+                order=order,
+                product=product["product"],
+                quantity=product["quantity"],
+                price=product["quantity"]*product["product"].price,
             )
             for product in products
         ]
