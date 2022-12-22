@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.templatetags.static import static
 from rest_framework.decorators import api_view
-from rest_framework.renderers import JSONRenderer
+from django.db import transaction
 from rest_framework.response import Response
 
 from .models import Product
@@ -71,6 +71,7 @@ def product_list_api(request):
 
 
 @api_view(["POST"])
+@transaction.atomic
 def register_order(request):
     raw_order = request.data
 
