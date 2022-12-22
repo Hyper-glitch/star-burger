@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.http import HttpResponseRedirect
 from django.shortcuts import reverse
 from django.templatetags.static import static
 from django.utils.html import format_html
@@ -119,3 +120,11 @@ class OrderAdmin(admin.ModelAdmin):
             instance.price = instance.product.price * instance.quantity
             instance.save()
         formset.save_m2m()
+
+    def response_change(self, request, obj):
+        response = super().response_change(request, obj)
+        next = "next"
+        if next in request.GET:
+            return HttpResponseRedirect(request.GET[next])
+        else:
+            return response
