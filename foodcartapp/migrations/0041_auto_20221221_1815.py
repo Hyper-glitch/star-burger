@@ -2,20 +2,22 @@
 
 from django.db import migrations
 
+
 def count_order_item_prices(apps, schema_editor):
-    '''
+    """
     We can't import the Post model directly as it may be a newer
     version than this migration expects. We use the historical version.
-    '''
+    """
     OrderItem = apps.get_model("foodcartapp", "OrderItem")
     for item in OrderItem.objects.select_related("product").all().iterator():
         item.price = item.product.price * item.quantity
         item.save()
 
+
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('foodcartapp', '0040_orderitem_price'),
+        ("foodcartapp", "0040_orderitem_price"),
     ]
 
     operations = [
