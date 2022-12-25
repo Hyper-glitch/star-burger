@@ -2,6 +2,7 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 from django.db.models import F
+from django.utils.translation import gettext_lazy as _
 
 class Restaurant(models.Model):
     name = models.CharField("название", max_length=50)
@@ -117,12 +118,21 @@ class Order(models.Model):
     def __str__(self):
         return f"{self.firstname} {self.lastname} - {self.address}"
 
+
 class OrderItemQuerySet(models.QuerySet):
     def total_price(self):
-        return self.select_related("product").annotate(total_price=(F("quantity")*F("product__price")))
+        return self.select_related("product").annotate(
+            total_price=(F("quantity") * F("product__price"))
+        )
 
 
 class OrderItem(models.Model):
+    class Status(models.TextChoices):
+        UNREFINED = "UN", _("НЕОБРАБОТАННО")
+        PACKING = "PG",_("В СБОРКЕ")
+        DELIVERING = "DV", _("В ДОСТАВКЕ")
+        COMPLETED = "CM" ,_("ГОТОВО")
+
     product = models.ForeignKey(
         Product,
         on_delete=models.CASCADE,
@@ -137,7 +147,17 @@ class OrderItem(models.Model):
         on_delete=models.CASCADE,
     )
     price = models.DecimalField(
-        "стоимость", max_digits=8, decimal_places=2, validators=[MinValueValidator(0)], blank=True,
+        "стоимость",
+        max_digits=8,
+        decimal_places=2,
+        validators=[MinValueValidator(0)],
+        blank=True,
+    )
+    status = models.CharField(
+        max_length=120,
+        choices=Status.choices,
+        default=Status.UNREFINED,
+        db_index=True,
     )
     objects = OrderItemQuerySet.as_manager()
 
