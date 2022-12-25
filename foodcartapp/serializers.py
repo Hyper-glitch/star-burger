@@ -24,7 +24,7 @@ class OrderModelSerializer(ModelSerializer):
                 order=order,
                 product=product["product"],
                 quantity=product["quantity"],
-                price=product["quantity"]*product["product"].price,
+                price=product["quantity"] * product["product"].price,
             )
             for product in products
         ]
