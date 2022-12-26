@@ -1,5 +1,6 @@
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.utils import timezone
 from phonenumber_field.modelfields import PhoneNumberField
 from django.db.models import F
 from django.utils.translation import gettext_lazy as _
@@ -105,12 +106,34 @@ class RestaurantMenuItem(models.Model):
 
 
 class Order(models.Model):
+    class Status(models.TextChoices):
+        UNREFINED = "UN", _("НЕОБРАБОТАННО")
+        PACKING = "PG", _("В СБОРКЕ")
+        DELIVERING = "DV", _("В ДОСТАВКЕ")
+        COMPLETED = "CM", _("ГОТОВО")
+
     firstname = models.CharField("Имя", max_length=50)
     lastname = models.CharField("Фамилия", max_length=50)
     phonenumber = PhoneNumberField("Телефон", db_index=True)
     address = models.CharField(
         verbose_name="Адрес доставки", max_length=120, db_index=True
     )
+    status = models.CharField(
+        "статус",
+        max_length=120,
+        choices=Status.choices,
+        default=Status.UNREFINED,
+        db_index=True,
+    )
+    comment = models.TextField(
+        "комментарий",
+        max_length=512,
+        default="",
+        blank=True,
+    )
+    created_at = models.DateTimeField("время создания" ,default=timezone.now, db_index=True)
+    called_at = models.DateTimeField("время подтверждения" ,db_index=True, null=True)
+    delivered_at = models.DateTimeField("время доставки" ,db_index=True, null=True)
 
     class Meta:
         verbose_name = "заказ"
@@ -128,12 +151,6 @@ class OrderItemQuerySet(models.QuerySet):
 
 
 class OrderItem(models.Model):
-    class Status(models.TextChoices):
-        UNREFINED = "UN", _("НЕОБРАБОТАННО")
-        PACKING = "PG", _("В СБОРКЕ")
-        DELIVERING = "DV", _("В ДОСТАВКЕ")
-        COMPLETED = "CM", _("ГОТОВО")
-
     product = models.ForeignKey(
         Product,
         on_delete=models.CASCADE,
@@ -152,19 +169,6 @@ class OrderItem(models.Model):
         max_digits=8,
         decimal_places=2,
         validators=[MinValueValidator(0)],
-        blank=True,
-    )
-    status = models.CharField(
-        "статус",
-        max_length=120,
-        choices=Status.choices,
-        default=Status.UNREFINED,
-        db_index=True,
-    )
-    comment = models.TextField(
-        "комментарий",
-        max_length=512,
-        default="",
         blank=True,
     )
     objects = OrderItemQuerySet.as_manager()
