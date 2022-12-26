@@ -4,6 +4,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 from django.db.models import F
 from django.utils.translation import gettext_lazy as _
 
+
 class Restaurant(models.Model):
     name = models.CharField("название", max_length=50)
     address = models.CharField(
@@ -129,9 +130,9 @@ class OrderItemQuerySet(models.QuerySet):
 class OrderItem(models.Model):
     class Status(models.TextChoices):
         UNREFINED = "UN", _("НЕОБРАБОТАННО")
-        PACKING = "PG",_("В СБОРКЕ")
+        PACKING = "PG", _("В СБОРКЕ")
         DELIVERING = "DV", _("В ДОСТАВКЕ")
-        COMPLETED = "CM" ,_("ГОТОВО")
+        COMPLETED = "CM", _("ГОТОВО")
 
     product = models.ForeignKey(
         Product,
@@ -154,10 +155,17 @@ class OrderItem(models.Model):
         blank=True,
     )
     status = models.CharField(
+        "статус",
         max_length=120,
         choices=Status.choices,
         default=Status.UNREFINED,
         db_index=True,
+    )
+    comment = models.TextField(
+        "комментарий",
+        max_length=512,
+        default="",
+        blank=True,
     )
     objects = OrderItemQuerySet.as_manager()
 
