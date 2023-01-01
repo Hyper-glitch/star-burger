@@ -131,9 +131,11 @@ class Order(models.Model):
         default="",
         blank=True,
     )
-    created_at = models.DateTimeField("время создания" ,default=timezone.now, db_index=True)
-    called_at = models.DateTimeField("время подтверждения" ,db_index=True, null=True)
-    delivered_at = models.DateTimeField("время доставки" ,db_index=True, null=True)
+    created_at = models.DateTimeField(
+        "время создания", default=timezone.now, db_index=True
+    )
+    called_at = models.DateTimeField("время подтверждения", db_index=True, null=True)
+    delivered_at = models.DateTimeField("время доставки", db_index=True, null=True)
 
     class Meta:
         verbose_name = "заказ"
