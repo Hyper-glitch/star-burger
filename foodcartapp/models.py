@@ -178,7 +178,7 @@ class OrderItem(models.Model):
         on_delete=models.CASCADE,
     )
     price = models.DecimalField(
-        "стоимость",
+        "общая стоимость",
         max_digits=8,
         decimal_places=2,
         validators=[MinValueValidator(0)],
