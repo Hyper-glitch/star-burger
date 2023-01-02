@@ -23,17 +23,17 @@
       <th>Ссылка на админку</th>
     </tr>
 
-    {% for item in order_items %}
+    {% for order in orders %}
       <tr>
-        <td>{{ item.order.id }}</td>
-        <td>{{ item.order.get_status_display }}</td>
-        <td>{{ item.order.get_payment_display }}</td>
-        <td>{{ item.total_price }}</td>
-        <td>{{ item.order.firstname }} {{ item.order.lastname }}</td>
-        <td>{{ item.order.phonenumber }}</td>
-        <td>{{ item.order.address }}</td>
+        <td>{{ order.id }}</td>
+        <td>{{ order.get_status_display }}</td>
+        <td>{{ order.get_payment_display }}</td>
+        <td>{{ order.total_price }}</td>
+        <td>{{ order.firstname }} {{ order.lastname }}</td>
+        <td>{{ order.phonenumber }}</td>
+        <td>{{ order.address }}</td>
         <td>
-          <a href="{% url 'admin:foodcartapp_order_change' item.order.id %}?next={{ request.get_full_path|urlencode }}">Редактировать</a>
+          <a href="{% url 'admin:foodcartapp_order_change' order.id %}?next={{ request.get_full_path|urlencode }}">Редактировать</a>
         </td>
       </tr>
     {% endfor %}
