@@ -8,7 +8,11 @@ from django.views import View
 
 from foodcartapp.models import Product, Restaurant, OrderItem, Order
 from geocoder.client import YandexGeocoderAPI
-from restaurateur.view_utils import set_order_total_prices, intersect_order_restaurants
+from restaurateur.view_utils import (
+    set_order_total_prices,
+    intersect_order_restaurants,
+    get_places,
+)
 
 
 class Login(forms.Form):
@@ -123,7 +127,8 @@ def view_orders(request):
     )
     total_price_orders = set_order_total_prices(orders, items)
     client = YandexGeocoderAPI()
-    intersect_order_restaurants(client=client, orders=total_price_orders)
+    places = get_places(orders=orders, rests=Restaurant.objects.all())
+    intersect_order_restaurants(client=client, orders=total_price_orders, places=places)
     return render(
         request,
         template_name="order_items.html",
