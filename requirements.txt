@@ -6,3 +6,5 @@ django-phonenumber-field[phonenumbers]==6.3.*
 djangorestframework==3.13.*
 flake8==6.0.*
 flake8-black==0.3.*
+requests==2.*
+geopy==2.3.*
