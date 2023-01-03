@@ -28,5 +28,7 @@ class YandexGeocoderAPI:
         return most_relevant["GeoObject"]["Point"]["pos"].split(" ")
 
     @staticmethod
-    def calculate_distance(order_coords: list[str, str], rest_coords: list[str, str]) -> float:
+    def calculate_distance(
+        order_coords: list[str, str], rest_coords: list[str, str]
+    ) -> float:
         return round(distance.distance(order_coords, rest_coords).km, 3)
