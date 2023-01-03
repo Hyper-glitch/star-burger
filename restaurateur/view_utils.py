@@ -32,13 +32,14 @@ def intersect_order_restaurants(client: YandexGeocoderAPI, orders: QuerySet) -> 
             for menu_item in product.menu_items.all():
                 if menu_item.availability:
                     restaurant = menu_item.restaurant
-                    rests_with_coords.update(
-                        {
-                            restaurant.pk: client.fetch_coordinates(
-                                address=restaurant.address
-                            )
-                        }
-                    )
+                    if not rests_with_coords.get(restaurant.pk):
+                        rests_with_coords.update(
+                            {
+                                restaurant.pk: client.fetch_coordinates(
+                                    address=restaurant.address
+                                )
+                            }
+                        )
                 else:
                     continue
                 if not rests.get(product.pk):
