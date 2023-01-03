@@ -8,7 +8,7 @@ class YandexGeocoderAPI:
         self.base_url = "https://geocode-maps.yandex.ru/1.x"
         self.apikey = YANDEX_GEOCODER_API_KEY
 
-    def fetch_coordinates(self, address: str):
+    def fetch_coordinates(self, address: str) -> tuple[str, str]:
         response = requests.get(
             self.base_url,
             params={
@@ -25,7 +25,8 @@ class YandexGeocoderAPI:
             return None
 
         most_relevant = found_places[0]
-        return most_relevant["GeoObject"]["Point"]["pos"].split(" ")
+        lon, lat = most_relevant["GeoObject"]["Point"]["pos"].split(" ")
+        return lon, lat
 
     @staticmethod
     def calculate_distance(
