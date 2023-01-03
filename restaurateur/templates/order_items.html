@@ -39,7 +39,7 @@
           <details>
             <summary>Доступен в ресторанах:</summary>
             {% for restaurant, distance  in order.distances.items %}
-              <li>{{ restaurant.name }} - {{ distance }} км</li>
+              <li>{{ restaurant.name }} - {{ distance }}</li>
             {% endfor %}
           </details>
         </td>

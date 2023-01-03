@@ -31,5 +31,7 @@ class YandexGeocoderAPI:
     @staticmethod
     def calculate_distance(
         order_coords: tuple[float, float], rest_coords: tuple[float, float]
-    ) -> float:
-        return round(distance.distance(order_coords, rest_coords).km, 3)
+    ) -> str:
+        if not any(order_coords):
+            return "ошибка определения координат"
+        return f"{round(distance.distance(order_coords, rest_coords).km, 3)} км"

@@ -10,8 +10,8 @@ class Place(models.Model):
         blank=True,
         unique=True,
     )
-    latitude = models.FloatField(max_length=6, verbose_name=" Широта")
-    longitude = models.FloatField(max_length=6, verbose_name=" Долгота")
+    latitude = models.FloatField(max_length=6, verbose_name=" Широта", null=True)
+    longitude = models.FloatField(max_length=6, verbose_name=" Долгота", null=True)
     requested_at = models.DateTimeField(
         verbose_name="Дата запроса", default=timezone.now
     )

@@ -92,7 +92,10 @@ def get_places(orders: QuerySet, rests: QuerySet)-> dict[str, tuple[float, float
 
 
 def add_place_to_create(client: YandexGeocoderAPI, address: str, places_to_create: list, places: dict[str, tuple[float, float]]):
-    longitude, latitude = client.fetch_coordinates(address=address)
+    try:
+        longitude, latitude = client.fetch_coordinates(address=address)
+    except TypeError:
+        longitude, latitude  = None, None
     places_to_create.append(
         Place(address=address, latitude=latitude, longitude=longitude)
     )
