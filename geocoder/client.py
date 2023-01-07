@@ -1,12 +1,12 @@
 import requests as requests
 from geopy import distance
-from star_burger.settings import YANDEX_GEOCODER_API_KEY
+from django.conf import settings
 
 
 class YandexGeocoderAPI:
     def __init__(self):
         self.base_url = "https://geocode-maps.yandex.ru/1.x"
-        self.apikey = YANDEX_GEOCODER_API_KEY
+        self.apikey = settings.YANDEX_GEOCODER_API_KEY
 
     def fetch_coordinates(self, address: str) -> tuple[float, float]:
         response = requests.get(
