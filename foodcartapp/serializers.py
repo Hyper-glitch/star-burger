@@ -1,20 +1,16 @@
 import phonenumbers
 from rest_framework.serializers import (
-    Serializer,
     ModelSerializer,
-    PrimaryKeyRelatedField,
-    CharField,
-    IntegerField,
     ValidationError,
 )
 
-from foodcartapp.models import Order, OrderItem, Product
+from foodcartapp.models import Order, OrderItem
 
 
 class OrderModelSerializer(ModelSerializer):
     class Meta:
         model = Order
-        fields = "__all__"
+        fields = ["firstname", "lastname", "phonenumber", "address"]
 
     def create(self, validated_data):
         products = validated_data.pop("products")
