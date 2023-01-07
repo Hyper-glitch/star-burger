@@ -170,7 +170,7 @@ class OrderItem(models.Model):
         related_name="order_items",
         verbose_name="продукт",
     )
-    quantity = models.IntegerField(verbose_name="количество")
+    quantity = models.IntegerField(verbose_name="количество", validators=[MinValueValidator(1)])
     order = models.ForeignKey(
         Order,
         related_name="items",
