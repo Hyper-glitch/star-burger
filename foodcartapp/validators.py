@@ -1,4 +1,7 @@
-"""Deprecated. Used for validate data before DRF serializers."""
+"""
+DEPRECATED.
+Used for validate data before DRF serializers.
+"""
 import phonenumbers
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.serializers import ValidationError
@@ -6,10 +9,10 @@ from rest_framework.serializers import ValidationError
 from foodcartapp.models import Product
 
 
-def validate(raw_order):
+def validate_raw_order(raw_order):
     errors = []
 
-    products_content = validate_products(raw_order)
+    products_content = validate_products(raw_order.get("products"))
     if products_content:
         errors.append(products_content)
 
@@ -20,17 +23,9 @@ def validate(raw_order):
     raise ValidationError(detail=errors)
 
 
-def validate_products(raw_order: dict) -> dict | None:
-    product_key = "products"
-    error_text = None
-
-    try:
-        products = raw_order["products"]
-    except KeyError as exc:
-        products = exc
-
+def validate_products(products: list) -> dict | None:
     content = (
-        validate_product_pk(products, product_key)
+        validate_product_pk(products)
         if isinstance(products, list) and len(products) > 0
         else None
     )
@@ -46,15 +41,17 @@ def validate_products(raw_order: dict) -> dict | None:
             error_text = "Этот список не может быть пустым"
         case KeyError():
             error_text = "Обязательное поле"
+        case _:
+            error_text = None
 
-    content = {product_key: error_text}
+    content = {"products": error_text}
     return content if error_text else None
 
 
 def validate_order(raw_order: dict) -> dict | None:
     copied_order = raw_order.copy()
     copied_order.pop("products")
-    order_keys = ""
+    order_keys = []
     error_text = None
     phonenumber = copied_order.get("phonenumber")
 
@@ -72,16 +69,12 @@ def validate_order(raw_order: dict) -> dict | None:
         match value:
             case None | "":
                 error_text = "Это поле не может быть пустым"
-                if 0 < idx:
-                    order_keys += ", "
-                order_keys += f"{key}"
+                order_keys.append(f"{key}")
             case []:
                 error_text = "Not a valid string"
-                if 0 < idx:
-                    order_keys += ", "
-                order_keys += f"{key}"
+                order_keys.append(f"{key}")
 
-    content = {order_keys.lstrip(", "): error_text}
+    content = {", ".join(order_keys): error_text}
     return content if error_text else None
 
 
@@ -93,11 +86,11 @@ def validate_phone_number(phonenumber: str) -> None | dict:
         return {order_keys: error_text}
 
 
-def validate_product_pk(products: list, product_key: str):
+def validate_product_pk(products: list):
     for product in products:
         product_pk = product["product"]
         try:
             Product.objects.get(pk=product_pk)
         except ObjectDoesNotExist:
             error_text = f"Недопустимый первичный ключ {product_pk}"
-            return {product_key: error_text}
+            return {"products": error_text}
