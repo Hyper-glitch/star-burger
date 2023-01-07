@@ -32,17 +32,18 @@ class OrderModelSerializer(ModelSerializer):
         return order
 
 
-class OrderItemSerializer(Serializer):
-    product = PrimaryKeyRelatedField(queryset=Product.objects.all())
-    quantity = IntegerField()
+class OrderItemSerializer(ModelSerializer):
+    class Meta:
+        model = OrderItem
+        fields = ["product", "quantity"]
 
 
-class OrderSerializer(Serializer):
+class OrderSerializer(ModelSerializer):
     products = OrderItemSerializer(many=True, allow_empty=False)
-    firstname = CharField()
-    lastname = CharField()
-    phonenumber = CharField()
-    address = CharField()
+
+    class Meta:
+        model = Order
+        fields = ["products", "firstname", "lastname", "phonenumber", "address"]
 
     def validate_phonenumber(self, phone_number: str):
         if not phonenumbers.is_valid_number(phonenumbers.parse(phone_number)):
