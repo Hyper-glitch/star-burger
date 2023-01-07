@@ -133,12 +133,10 @@ class Order(models.Model):
         "способ оплаты",
         max_length=2,
         choices=Payment.choices,
-        default=Payment.CASH,
         db_index=True,
     )
     comment = models.TextField(
         "комментарий",
-        default="",
         blank=True,
     )
     created_at = models.DateTimeField(
