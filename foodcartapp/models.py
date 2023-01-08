@@ -107,7 +107,7 @@ class RestaurantMenuItem(models.Model):
 
 class Order(models.Model):
     class Status(models.TextChoices):
-        UNREFINED = "UN", _("НЕОБРАБОТАННО")
+        NOT_PROCESSED = "NP", _("НЕОБРАБОТАННО")
         PACKING = "PG", _("В СБОРКЕ")
         DELIVERING = "DV", _("В ДОСТАВКЕ")
         COMPLETED = "CM", _("ГОТОВО")
@@ -126,7 +126,7 @@ class Order(models.Model):
         "статус",
         max_length=120,
         choices=Status.choices,
-        default=Status.UNREFINED,
+        default=Status.NOT_PROCESSED,
         db_index=True,
     )
     payment = models.CharField(
